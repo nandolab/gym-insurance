@@ -18,11 +18,11 @@ waiting. No coauthor message or submission is sent by repository maintenance.
 
 ## Tracked work
 
-- [#1 — public installation and documentation](https://github.com/nandevers/gym-insurance/issues/1)
-- [#2 — historical data provenance](https://github.com/nandevers/gym-insurance/issues/2)
-- [#3 — independent scientific/reproduction review](https://github.com/nandevers/gym-insurance/issues/3)
-- [#4 — attribution, licensing and public release](https://github.com/nandevers/gym-insurance/issues/4)
-- [#5 — venue, contribution audit and clean submission](https://github.com/nandevers/gym-insurance/issues/5)
+- [#1 — public installation and documentation](https://github.com/nandolab/gym-insurance/issues/1)
+- [#2 — historical data provenance](https://github.com/nandolab/gym-insurance/issues/2)
+- [#3 — independent scientific/reproduction review](https://github.com/nandolab/gym-insurance/issues/3)
+- [#4 — attribution, licensing and public release](https://github.com/nandolab/gym-insurance/issues/4)
+- [#5 — venue, contribution audit and clean submission](https://github.com/nandolab/gym-insurance/issues/5)
 
 The obsolete public feature branch is retained by the archive tag
 `archive/feature-enhance-env-20261022` at its original tip. It was not merged into

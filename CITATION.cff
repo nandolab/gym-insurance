@@ -6,5 +6,5 @@ version: 0.2.0.dev0
 authors:
   - family-names: Barbosa
     given-names: Fernando
-repository-code: "https://github.com/nandevers/gym-insurance"
+repository-code: "https://github.com/nandolab/gym-insurance"
 abstract: "Corrected development implementation. This preview is not a package release or evidence of validated fraud detection."

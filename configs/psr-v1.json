@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "experiment": "psr-parana-soy-retrospective-paid-indemnity-selection-v1",
+  "source_status": "historical local CSV snapshots and derived cohort are hashed; official resource IDs/dictionary verified, exact current official byte/record alignment unresolved",
+  "research_status": "preliminary local reproducibility; public principal reproduction pending official snapshot alignment; no fraud efficacy claim",
+  "date_semantics": "DT_APOLICE policy-date cohort proxy; not verified claim arrival or settlement time",
+  "amount_availability": "VALOR_INDENIZACAO is historical amount PAID, not requested amount; retrospective selection only, actual availability/settlement timestamps unavailable",
+  "train_end": "2017-12-31",
+  "validation_end": "2019-12-31",
+  "test_end": "2021-12-31",
+  "episode_size": 256,
+  "budget_fractions": [0.1, 0.25, 0.5],
+  "seeds": [0,1,2,3,4,5,6,7,8,9],
+  "reward_modes": ["potential_improvement", "signed_counterfactual"],
+  "policies": ["reject_all", "accept_feasible", "random", "amount_threshold", "myopic", "dqn"],
+  "feature_columns": [],
+  "synthetic_controls": {"seed": 20261022, "rows": 256},
+  "dqn": {
+    "hidden_sizes": [64,64],
+    "total_steps": 12000,
+    "gamma": 1.0,
+    "learning_rate": 0.001,
+    "batch_size": 64,
+    "replay_size": 10000,
+    "warmup_steps": 256,
+    "train_frequency": 4,
+    "target_update_steps": 250,
+    "epsilon_fraction": 0.6,
+    "epsilon_end": 0.05,
+    "gradient_clip": 10.0
+  }
+}

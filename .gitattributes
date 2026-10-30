@@ -1,0 +1,3 @@
+# Frozen research hashes describe file bytes, including historical line endings.
+# Preserve those bytes on checkout rather than applying platform EOL conversion.
+* -text

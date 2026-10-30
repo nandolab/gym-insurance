@@ -1,7 +1,7 @@
-
-import os
-import shutil
+import requests
+from bs4 import BeautifulSoup
 import pandas as pd
+import os
 import logging
 from typing import Dict, Optional, Any
 
@@ -42,9 +42,6 @@ class Wallet:
             self._current_budget[self._current_case] = self.budget_spent_percentage
             self._budgets[self._current_case] = self.balance
         logger.info(f"Current (%) Budget: {self.budget_spent_percentage}")
-
-    def reject_withdrawal(self) -> None:
-        self._budgets[self.current_case] = self.balance
 
     @property
     def balance(self) -> float:
@@ -87,6 +84,8 @@ class Wallet:
         return self._decisions.get(self._current_case)
 
     def add_decision(self, case: int, decision: Any) -> None:
+        if case < 0:
+            raise ValueError("Case number cannot be negative")
         self._decisions[case] = decision
 
     def get_approved_cases(self) -> list:
@@ -129,79 +128,46 @@ class Wallet:
             value for case, value in self._budgets.items() if self._decisions[case] == 0
         ]
 
-    def rollback_decision(self, case: Optional[int] = None) -> None:
-        """
-        Rolls back a decision for a given case or the current case if no case is specified.
+class DataDownloader:
+    def __init__(self, base_dir='./temp'):
+        self.base_dir = base_dir
+        os.makedirs(self.base_dir, exist_ok=True)
 
-        Args:
-            case (Optional[int]): The case to roll back. If not specified, the current case is used.
-        """
-        if case is None:
-            case = self._current_case
+    def get_xlsx_download_url(self, page_url):
+        response = requests.get(page_url)
+        if response.status_code != 200:
+            print("Failed to retrieve the webpage")
+            return None
 
-        if case is None or case not in self._decisions:
-            raise ValueError("Invalid case provided for rollback.")
-
-        # Reset the decision and any associated budget
-        logger.info(f"Rolling back decision for case {case}.")
-        self._decisions[case] = None
-        self._current_budget[case] = None
-        self._budgets[case] = None
-
-        if self._current_case == case:
-            self._current_case = None  # Reset the current case if it's the same case
-
-
-
-
-
-def move_parquet_files(source_dir, destination_dir, budget):
-    """
-    Read all Parquet files inside each immediate subdirectory of source_dir,
-    concatenate them into a single DataFrame, add a column 'episodes' based on
-    the subdirectory name, and write them as a single file in destination_dir.
-    The output file is named results_{budget}.parquet.
-    
-    :param source_dir: The directory to read files from.
-    :param destination_dir: The directory to write the concatenated file to.
-    :param budget: The budget value to include in the output filename.
-    """
-    # Ensure destination directory exists
-    if not os.path.exists(destination_dir):
-        os.makedirs(destination_dir)
-    
-    # List immediate subdirectories in source_dir
-    subdirs = [name for name in os.listdir(source_dir)
-               if os.path.isdir(os.path.join(source_dir, name))]
-    
-    all_dfs = []
-    
-    for subdir in subdirs:
-        subdir_path = os.path.join(source_dir, subdir)
-        # Get all Parquet files in the subdirectory
-        parquet_files = [os.path.join(subdir_path, f)
-                         for f in os.listdir(subdir_path)
-                         if f.endswith('.parquet')]
+        soup = BeautifulSoup(response.content, 'html.parser')
+        download_link = soup.select_one('p > a')
         
-        if parquet_files:
-            # Read and concatenate Parquet files
-            dfs = [pd.read_parquet(pf) for pf in parquet_files]
-            concatenated_df = pd.concat(dfs, ignore_index=True)
-            # Add 'episodes' column based on subdir name
-            concatenated_df['episodes'] = int(subdir)
-            # Append to list of all DataFrames
-            all_dfs.append(concatenated_df)
-            print(f"Processed Parquet files for episode {subdir}")
+        if download_link and 'href' in download_link.attrs:
+            return download_link['href']
         else:
-            print(f"No Parquet files found in {subdir_path}")
-    
-    if all_dfs:
-        # Concatenate all DataFrames from all subdirectories
-        final_df = pd.concat(all_dfs, ignore_index=True)
-        # Write final DataFrame to destination directory
-        output_filename = f"results_{budget}.parquet"
-        destination_file = os.path.join(destination_dir, output_filename)
-        final_df.to_parquet(destination_file)
-        print(f"Wrote concatenated Parquet file to {destination_file}")
-    else:
-        print("No Parquet files found in any subdirectories.")
+            return None
+
+    def download_xlsx(self, xlsx_url, file_name):
+        response = requests.get(xlsx_url)
+        if response.status_code == 200:
+            with open(file_name, 'wb') as file:
+                file.write(response.content)
+            print(f"Downloaded {file_name}")
+            return file_name
+        else:
+            print(f"Failed to download {xlsx_url}")
+            return None
+
+    def convert_xlsx_to_csv(self, xlsx_path, csv_path):
+        df = pd.read_excel(xlsx_path)
+        df.to_csv(csv_path, index=False)
+        print(f"Saved as {csv_path}")
+
+    def process_dataset(self, dataset_url):
+        xlsx_url = self.get_xlsx_download_url(dataset_url)
+        if xlsx_url:
+            temp_xlsx_file = os.path.join(self.base_dir, xlsx_url.split('/')[-1])
+            downloaded_xlsx = self.download_xlsx(xlsx_url, temp_xlsx_file)
+            if downloaded_xlsx:
+                temp_csv_file = temp_xlsx_file.replace('.xlsx', '.csv')
+                self.convert_xlsx_to_csv(downloaded_xlsx, temp_csv_file)

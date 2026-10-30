@@ -10,10 +10,10 @@ and independent scientific review remain open.
 
 ## Start here
 
-- [Corrected v1 development branch](https://github.com/nandevers/gym-insurance/tree/refactor/insurenv-v1-consolidation)
+- [Corrected v1 development branch](https://github.com/nandolab/gym-insurance/tree/refactor/insurenv-v1-consolidation)
 - [Research protocol and environment contract](docs/PROTOCOL.md)
 - [Reproduction instructions](docs/REPRODUCING.md)
-- [Roadmap](ROADMAP.md) and [tracked issues](https://github.com/nandevers/gym-insurance/issues)
+- [Roadmap](ROADMAP.md) and [tracked issues](https://github.com/nandolab/gym-insurance/issues)
 - [Contribution guide](CONTRIBUTING.md)
 - [License status](LICENSE-STATUS.txt)
 
@@ -25,7 +25,7 @@ and corrected v1 results are different protocols and must not be combined.
 ## Install the development preview
 
 ```sh
-git clone --branch refactor/insurenv-v1-consolidation https://github.com/nandevers/gym-insurance.git
+git clone --branch refactor/insurenv-v1-consolidation https://github.com/nandolab/gym-insurance.git
 cd gym-insurance
 python -m venv .venv
 # Activate .venv for your shell, then:
